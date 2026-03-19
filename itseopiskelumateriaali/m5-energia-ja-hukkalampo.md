@@ -1,0 +1,96 @@
+# Energian kulutus ja uudelleenkäyttö datakeskuksessa:
+
+> 💡 **Havainnollistus mittasuhteesta:**
+>
+> Yhden suuren datakeskuksen sähköteho voi olla jopa **100 megawattia (MW)**, mikä tarkoittaa vuositason kulutuksena noin  
+> **876 000 000 kilowattituntia (kWh)** (*= 100 MW × 24 h × 365 vrk*).  
+> 
+> Vertailun vuoksi: sähkölämmitteisen omakotitalon vuotuinen sähkönkulutus on keskimäärin noin **20 000 kWh**.  
+> 
+> ➤ **100 MW:n datakeskus kuluttaa siis saman verran sähköä vuodessa kuin yli 43 000 omakotitaloa yhteensä.**
+>  
+> Tämä konkretisoi, miksi energiatehokkuus, uusiutuvan energian käyttö ja hukkalämmön hyödyntäminen ovat kriittisiä vihreän datakeskuksen toteutuksessa.
+> Datakeskuksen sähkönkulutus massiivinen vakio — ja jos tämä energia tuotetaan fossiilisilla polttoaineilla, jokainen kilowattitunti kasvattaa suoraan ilmakehän hiilidioksidipitoisuutta.
+> Samalla valtavat määrät syntynyttä hukkalämpöä johdetaan ulkoilmaan tai vesistöihin, mikä lämmittää ympäristöämme – aivan kirjaimellisesti.
+> 
+
+Datakeskuksen sähköenergiankulutuksen neljä pääkategoriaa:
+
+
+- **Eₛ (servers)** – palvelinten energiankulutus  
+- **Eₛₜ (storage)** – tallennuslaitteiden energiankulutus  
+- **Eₚ (network)** – verkkolaitteiden energiankulutus  
+- **Eᵢ (infrastructure)** – tukijärjestelmien, kuten jäähdytyksen, UPS-järjestelmien ja valaistuksen, energiankulutus  
+
+Yhteensä nämä muodostavat datakeskuksen kokonaiskulutuksen:
+
+**E = Eₛ + Eₛₜ + Eₚ + Eᵢ**
+
+Jaottelu auttaa hahmottamaan, että datakeskuksen sähköenergian kulutus jakautuu palvelimiin, tallennuslaitteisiin, verkkolaitteisiin ja tukijärjestelmiin (kuten jäähdytys ja varavirtaratkaisut). Tukijärjestelmien osuus voi kasvaa merkittäväksi, erityisesti silloin kun niiden toiminnan energiatehokkuuteen ei ole kiinnitetty huomiota [1].
+
+[📊 Näytä kuva datakeskuksen kokonaisenergiankulutuksen neljästä pääkategoriasta:](kuvat/datakeskuksen_energiankulutus.png)
+
+Palvelimissa suorittimet (CPU, GPU), levyt (I/O) ja verkkolaitteet (NIC) suorittavat datakeskuksen varsinaiset laskenta- ja tietoliikennetehtävät.
+
+Suurin yksittäinen energiankuluttaja on palvelimissa suoritin, jonka kulutus kasvaa laskentakuorman, ytimien määrän ja kellotaajuuden myötä ~50-60%. Levylaitteistot kuluttavat merkittävästi energiaa erityisesti kirjoitusoperaatioissa ~20-30%, ja verkkolaitteiden kulutus riippuu voimakkaasti siirtonopeudesta ja pakettikoon hallinnasta ~10-20%, lisäksi palvelimella on muuta esimerkiksi käyttöjärjestelmän aiheuttamaa taustakulutusta ~10-20 [2].
+
+Nykyisissä (vuoden 2025) järjestelmissä GPU:n (tai TPU:n) osuus on noussut merkittävästi erityisesti tekoälysovelluksissa, mutta CPU on edelleen monissa palvelinsovelluksissa suurin yksittäinen kuluttaja.
+
+## Energiatehokkuuden mittaaminen (PUE):
+Keskeinen energiatehokkuuden mittari on PUE (Power Usage Effectiveness)
+PUE-arvo saadaan vertaamalla datakeskuksen
+kokonaisenergiankulutusta IT-laitteiden kulutukseen. Ideaalisesti PUE olisi 1,0 (kaikki energia
+menee laskentaan), mutta käytännössä aina on jonkin verran ylimääräistä kulutusta. Esimerkiksi,
+jos PUE on vaikkapa 2, se tarkoittaa että jokaista palvelinten käyttämää kilowattituntia kohden
+toinen kilowattitunti kuluu tukitoimintoihin. Modernit hyvin suunnitellut datakeskukset voivat
+saavuttaa PUE-lukuja lähellä 1,1–1,2.
+
+## Datakeskuksen energiankulutuksen vähentäminen:
+Virtualisoinnin avulla sama laitemäärä palvelee useampia käyttäjiä (parannetaan käyttöastetta, ettei palvelimet seiso tyhjän panttina),
+Lämpötilaolosuhteiden optimointi (kaikkien tilojen ei tarvitse olla jääkaappikylmiä – nykylaitteet
+kestävät hieman korkeampia lämpötiloja turvallisesti, mikä voi vähentää jäähdytystarvetta), 
+Jäähdytyksen energiatehokkuusratkaisut (vapaajäähdytys ulkoilmalla kylminä vuodenaikoina tai
+lämpimän ja kylmän ilmankierron erottelu palvelinsaleissa, jotta jäähdytys kohdistuu tehokkaasti oikeisiin paikkoihin).
+
+## Hukkalämmön talteenotto:
+Palvelimen suorittaessa laskenta- ja tietoliikennetehtäviä, ne muuttavat sähköenergian lämmöksi. 
+Tämä lämpö johdetaan pois (esim. puhalletaan ulkoilmaan tai jäähdytysveden mukana mereen), tai sitä hyödynnetään arvokkaana sivutuotteena.
+Lämmön talteenottojärjestelmät (kuten lämpöpumput ja lämmönvaihtimet) voivat siirtää palvelinsalin hukkalämmön esimerkiksi
+kaukolämpöverkkoon tai lähirakennusten lämmitykseen. 
+Tällöin sama energia hyödynnetään kahdesti: ensin digipalveluiden pyörittämiseen ja sitten rakennusten lämmittämiseen.
+<p align="center">
+  <img src="kuvat/datakeskus_ei_hukkalammon_hyod.png" alt="Perinteinen datakeskus – lämpö hukkaan" width="26%">
+  <img src="kuvat/datakeskus_hyod_hukkalampöa.png" alt="Hukkalämpöä hyödyntävä datakeskus" width="46%">
+</p>
+
+Hukkalämmön hyödyntäminen parantaa kokonaishyötysuhdetta ja vähentää yhteiskunnan primäärienergian tarvetta. 
+Jokainen kilowattitunti, joka saadaan talteen datakeskuksesta ja käytetään vaikkapa talojen lämmitykseen, on kilowattitunti vähemmän
+polttoaineita kattiloissa tai sähköä erillisissä lämpölaitoksissa. 
+Samalla datakeskuksen toimintaa voidaan perustella ympäristöystävällisempänä (vähemmän hukkaa).
+
+Hukkalämmön hyödyntäminen ei ole aivan triviaalia: se vaatii investointeja (esim. lämpöpumppuihin, putkistoihin) ja edellyttää, että lähettyvillä on
+lämmön tarvetta (esimerkiksi kaupunki tai teollisuuslaitos, joka voi hyödyntää lämpöä). 
+Aina tämä ei toteudu – tästä syystä kaikki datakeskukset eivät vielä kierrätä lämpöään.
+
+Esimerkki: Telia Helsinki Data Center Pitäjänmäellä. 
+Telian suuri datakeskus Helsingissä on kytketty energiayhtiö Helenin kaukolämpöverkkoon.
+Käytännössä tuhansien palvelimien tuottama lämpö kerätään talteen ja ohjataan lämpöpumppujen avulla lämmittämään helsinkiläisiä koteja ja käyttövetä.
+Telian datakeskuksen hukkalämmöllä voidaan kattaa tuhansien kotitalouksien lämmöntarve. 
+Tämä esimerkki osoittaa, kuinka datakeskuksen jäte-energia muuttuu hyödylliseksi palveluksi kaupunkilaisille.
+Yandexin datakeskus Mäntsälässä oli Suomen ensimmäisiä,joka ryhtyi lämmittämään koko lähikuntaa palvelinsalien hukkalämmöllä, ja Kajaanin uusi
+LUMI-supertietokone syöttää hukkalämpönsä kaupungin kaukolämpöverkkoon. 
+Energian kierrätys datakeskuksista on jo todellisuutta Suomessa.
+Jatkolukuvinkki: Ylen uutinen “Datakeskusten hukkalämpöä on pian pakko hyötykäyttää” (7.6.2023) käsittelee, kuinka EU ja kaupungit kannustavat datakeskuksia hyödyntämään lämpöään entistä tehokkaammin.
+
+Pohdintatehtävä (vapaaehtoinen): 
+Miksi luulet, ettei kaikissa datakeskuksissa vielä kierrätetä hukkalämpöä? 
+Pohdi, millaisia esteitä tai haasteita hukkalämmön hyödyntämiseen voi liittyä (taloudelliset kustannukset, sijainti, tekniset rajoitteet jne.).
+
+##### [1] Arman Shehabi et al. 2018 Environ. Res.Lett. 13 124030.
+##### [2] Arjona et al., "A Measurement-based Analysis of the Energy Consumption of Datacenter Services", arXiv:1402.0804v1 (2014).
+
+
+
+
+
+
