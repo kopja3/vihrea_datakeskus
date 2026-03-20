@@ -2,12 +2,271 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=./site-view.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vihreä datakeskus</title>
-  <script>window.location.replace('./site-view.html');</script>
+  <meta name="description" content="Vihreä datakeskus -aineiston julkinen aloitussivu ja lukunäkymä.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-soft: #f2f4f7;
+      --text: #101828;
+      --muted: #475467;
+      --line: #e4e7ec;
+      --brand: #0f5c38;
+      --brand-2: #157347;
+      --brand-soft: #e8f5ee;
+      --shadow: 0 12px 30px rgba(16,24,40,0.08);
+      --radius: 18px;
+      --container: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .container {
+      width: min(var(--container), calc(100% - 2rem));
+      margin: 0 auto;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0b1020 0%, #163a2a 100%);
+      color: #fff;
+      padding: 5rem 0 4rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 0.75rem; }
+    h1 { font-size: clamp(2.4rem, 5vw, 4.3rem); max-width: 820px; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+    .lead {
+      max-width: 820px;
+      font-size: 1.12rem;
+      color: rgba(255,255,255,0.88);
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-top: 1.5rem;
+    }
+    .button {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.9rem 1.15rem;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: transform 0.18s ease;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button.primary {
+      background: #fff;
+      color: var(--brand);
+    }
+    .button.secondary {
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .stat {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 1rem;
+    }
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 0.15rem;
+    }
+    .section {
+      padding: 2.4rem 0;
+    }
+    .intro-grid, .card-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+    }
+    .card p, .section-intro, .mini-list, .footer p {
+      color: var(--muted);
+    }
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .section-header a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .section-header a:hover { text-decoration: underline; }
+    .topic-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+    }
+    .topic-card .tag {
+      align-self: start;
+      padding: 0.28rem 0.6rem;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .mini-list {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+    .mini-list li + li { margin-top: 0.3rem; }
+    .topic-actions {
+      margin-top: auto;
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+    .topic-actions a {
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--brand);
+    }
+    .topic-actions a.secondary-link {
+      color: var(--muted);
+    }
+    .strip {
+      background: var(--surface-soft);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .footer {
+      padding: 2rem 0 3rem;
+    }
+    .footer .small {
+      font-size: 0.95rem;
+    }
+    @media (max-width: 700px) {
+      .hero { padding: 4rem 0 3rem; }
+      .section-header { display: block; }
+    }
+  </style>
 </head>
 <body>
-  <p>Ohjataan sisältönäkymään... <a href="./site-view.html">Avaa sisältösivu</a></p>
+  <header class="hero">
+    <div class="container">
+      <div class="eyebrow">Vihreä datakeskus</div>
+      <h1>Opaskokonaisuus vihreän datakeskuksen suunnitteluun, oppimiseen ja kehittämiseen</h1>
+      <p class="lead">Tämä sivusto kokoaa repoon tallennetun aineiston julkiseksi käyttöliittymäksi. Etusivulta pääsee suoraan oppaisiin, ja varsinainen sisältö avautuu monisivuisessa lukunäkymässä ilman GitHubin tiedostonäkymää.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="./site-view.html">Avaa lukunäkymä</a>
+        <a class="button secondary" href="#osiot">Selaa sisältöä</a>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container intro-grid">
+      <article class="card">
+        <h2>Aloita tästä</h2>
+        <p>Jos haluat kokonaiskuvan, aloita perusoppaan johdannosta. Jos tavoite on koulutus tai itsenäinen perehtyminen, siirry itseopiskelumateriaaliin. Jos taas etsit mittareita tai laskentaa, käytä mittarikortteja ja menetelmäopasta.</p>
+      </article>
+      <article class="card">
+        <h2>Miten sivusto toimii</h2>
+        <p>Etusivu antaa rakenteen. Lukunäkymä hakee alkuperäiset Markdown-tiedostot reposta ja renderöi ne verkkosivuksi. Näin lähdeaineisto pysyy tallessa, mutta lukeminen on selvästi helpompaa.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="osiot" class="section strip">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2>Sisältöosiot</h2>
+          <p class="section-intro">Valitse osio ja siirry sen sisällä ensimmäiseen sisältöön tai avaa koko aineisto lukunäkymässä.</p>
+        </div>
+        <a href="./site-view.html">Avaa koko aineisto</a>
+      </div>
+      <div class="card-grid" id="sections"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <h2>Repo ja lähdeaineisto</h2>
+      <p>Alkuperäinen aineisto säilyy repossa <a href="https://github.com/kopja3/vihrea_datakeskus" target="_blank" rel="noreferrer">kopja3/vihrea_datakeskus</a>. Tämä sivu käyttää samaa sisältöä julkisena käyttöliittymänä.</p>
+      <p class="small">Jos muutat Markdown-tiedostoja repossa, lukunäkymä näyttää päivittyneen sisällön ilman erillistä manuaalista kopiointia.</p>
+    </div>
+  </footer>
+
+  <script src="./site-data.js"></script>
+  <script>
+    const sectionsRoot = document.getElementById('sections');
+    const statsRoot = document.getElementById('stats');
+    const data = window.SITE_DATA;
+    const totalSections = data.sections.length;
+    const totalDocs = data.sections.reduce((sum, section) => sum + section.items.length, 0);
+
+    function docHref(path) {
+      return `./site-view.html?doc=${encodeURIComponent(path)}`;
+    }
+
+    statsRoot.innerHTML = `
+      <div class="stat"><strong>${totalSections}</strong><span>sisältöosiota</span></div>
+      <div class="stat"><strong>${totalDocs}</strong><span>dokumenttia</span></div>
+      <div class="stat"><strong>1</strong><span>yhtenäinen lukunäkymä</span></div>
+    `;
+
+    sectionsRoot.innerHTML = data.sections.map(section => {
+      const first = section.items[0];
+      const preview = section.items.slice(0, 4).map(item => `<li>${item.title}</li>`).join('');
+      return `
+        <article class="topic-card">
+          <span class="tag">${section.title}</span>
+          <div>
+            <h3>${section.title}</h3>
+            <p>${section.summary}</p>
+          </div>
+          <ul class="mini-list">${preview}</ul>
+          <div class="topic-actions">
+            <a href="${docHref(first.path)}">Avaa osio</a>
+            <a class="secondary-link" href="./site-view.html">Koko aineisto</a>
+          </div>
+        </article>
+      `;
+    }).join('');
+  </script>
 </body>
 </html>
