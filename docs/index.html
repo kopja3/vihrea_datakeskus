@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vihreä datakeskus</title>
+  <meta name="description" content="Vihreä datakeskus -opaskokonaisuuden sivusto. Sisältö säilyy Markdown-tiedostoissa, mutta sivu tarjoaa selkeän lähtöpisteen oppaisiin, kaavioihin ja työmuistioihin.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-inner">
+      <p class="eyebrow">Vihreä datakeskus</p>
+      <h1>Opaskokonaisuus verkkosivuna</h1>
+      <p class="lead">Tämä sivu kokoaa perusoppaan, itseopiskelumateriaalin, menetelmäoppaan, kaaviot ja työmuistiot yhteen näkymään. Lähdeaineisto säilyy repossa sellaisenaan.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#aloita">Aloita tästä</a>
+        <a class="button secondary" href="https://github.com/kopja3/vihrea_datakeskus" target="_blank" rel="noreferrer">Avaa repo</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="container intro-strip">
+      <div class="intro-card">
+        <h2>Miten tätä käytetään</h2>
+        <p>Sivu toimii selkeänä sisäänkäyntinä aineistoon. Varsinaiset lähdetekstit pysyvät Markdown-tiedostoina, joten sisältöä voi kehittää jatkossakin ilman että idearepoa tai työskentelytapaa tarvitsee muuttaa.</p>
+      </div>
+      <div class="intro-card">
+        <h2>Mitä täältä löytyy</h2>
+        <p>Perusopas jäsentää kokonaisuuden suunnittelusta mittareihin. Itseopiskelumateriaali tukee koulutusta. Menetelmäopas, kaaviot ja työmuistiot täydentävät käytännön käyttöä.</p>
+      </div>
+    </section>
+
+    <section id="aloita" class="container section-block">
+      <div class="section-heading">
+        <h2>Aloita tästä</h2>
+        <p>Kolme luontevaa aloituspistettä aineistoon.</p>
+      </div>
+      <div id="featured-grid" class="grid three"></div>
+    </section>
+
+    <section class="container section-block search-block">
+      <div class="section-heading">
+        <h2>Sisältökartta</h2>
+        <p>Suodata sisältöä otsikon, teeman tai tiedostopolun perusteella.</p>
+      </div>
+      <label class="search-label" for="search">Hae aineistosta</label>
+      <input id="search" class="search" type="search" placeholder="esim. energia, mittarit, sijainti, hukkalämpö">
+      <div id="content-sections"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>Rakennettu repoa <a href="https://github.com/kopja3/vihrea_datakeskus" target="_blank" rel="noreferrer">kopja3/vihrea_datakeskus</a> varten.</p>
+      <p>Julkaisu GitHub Pagesilla: <code>main</code> / <code>docs</code>.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
