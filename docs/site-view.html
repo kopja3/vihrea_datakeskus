@@ -205,7 +205,7 @@
     }
 
     function normalizePath(base, relative) {
-      if (/^(https?:|mailto:|#)/i.test(relative)) return relative;
+      if (/^(https?:|mailto:|#|data:)/i.test(relative)) return relative;
       const stack = (base + relative).split('/');
       const out = [];
       for (const part of stack) {
@@ -214,6 +214,52 @@
         else out.push(part);
       }
       return out.join('/');
+    }
+
+    const legacyAssetMap = new Map([
+      ['kuvat/Kansallinen%20konsali.jpg', 'kuvat/kansallinen-konsali.jpg'],
+      ['kuvat/Kansallinen konsali.jpg', 'kuvat/kansallinen-konsali.jpg'],
+      ['kuvat/LUMIwhitespacetekninenkerros.jpg', 'kuvat/lumi-whitespace-tekninen-kerros.jpg'],
+      ['kuvat/Vaihe1.png', 'kuvat/m3-vaihe1.png'],
+      ['kuvat/Vaihe2.png', 'kuvat/m3-vaihe2.png'],
+      ['kuvat/Vaihe3.png', 'kuvat/m3-vaihe3.png'],
+      ['kuvat/Vaihe4.png', 'kuvat/m3-vaihe4.png'],
+      ['kuvat/vaihe5_2.png', 'kuvat/m4-vaihe5.png'],
+      ['kuvat/Vaihe6.png', 'kuvat/m3-vaihe6.png'],
+      ['kuvat/datakeskus_vaihe1_sahkonsyotto_jaahdytys.png', 'kuvat/m4-sahkonsyotto-jaahdytys.png'],
+      ['kuvat/datakeskus_vaihe2_verkkopalvelupyynnot2.png', 'kuvat/m4-verkkopalvelupyynnot.png'],
+      ['kuvat/Datakeskuksen_operointi_ja_käytto2.png', 'kuvat/m4-operointi-ja-kaytto.png'],
+      ['kuvat/Datakeskuksen_operointi_ja_kaytto2.png', 'kuvat/m4-operointi-ja-kaytto.png'],
+      ['kuvat/datakeskuksen_energiankulutus.png', 'kuvat/m5-energiankulutus.png'],
+      ['kuvat/datakeskus_ei_hukkalammon_hyod.png', 'kuvat/m5-ei-hukkalammon-hyod.png'],
+      ['kuvat/datakeskus_hyod_hukkalampöa.png', 'kuvat/m5-hukkalammon-hyodyntaminen.png'],
+      ['kuvat/datakeskus_hyod_hukkalampoa.png', 'kuvat/m5-hukkalammon-hyodyntaminen.png'],
+      ['img/p1-kuva1-datakeskus-infra.png', 'kuvat/p1-kuva1-datakeskus-infra.png'],
+      ['img/p1-kuva2-palvelupyynto.png', 'kuvat/p1-kuva2-palvelupyynto.png'],
+      ['img/p3-kuva3-datakeskuksen-mittaus-jarjestelma.png', 'kuvat/p3-kuva3-datakeskuksen-mittaus-jarjestelma.png']
+    ]);
+
+    function canonicalizeAssetPath(path) {
+      return (path || '')
+        .replace(/\\/g, '/')
+        .trim()
+        .replace(/^(\.\/)+/, '')
+        .replace(/^(\.\.\/)+/, '');
+    }
+
+    function resolveAssetPath(base, relative) {
+      if (!relative || /^(https?:|mailto:|#|data:)/i.test(relative)) return relative || '';
+      const normalized = normalizePath(base, relative);
+      const candidates = [
+        canonicalizeAssetPath(normalized),
+        canonicalizeAssetPath(decodeURIComponent(normalized)),
+        canonicalizeAssetPath(relative),
+        canonicalizeAssetPath(decodeURIComponent(relative))
+      ];
+      for (const candidate of candidates) {
+        if (legacyAssetMap.has(candidate)) return legacyAssetMap.get(candidate);
+      }
+      return normalized;
     }
 
     function docHref(path) {
@@ -250,19 +296,27 @@
           const resolved = normalizePath(base, href);
           return `<a href="${docHref(resolved)}">${label}</a>`;
         }
-        const resolved = normalizePath(base, href);
-        if (/^(https?:|mailto:|#)/i.test(href)) {
-          return `<a href="${href}" ${title ? `title="${title}"` : ''} target="_blank" rel="noreferrer">${label}</a>`;
+        const resolved = resolveAssetPath(base, href);
+        if (/^(https?:|mailto:|#|data:)/i.test(resolved)) {
+          return `<a href="${resolved}" ${title ? `title="${title}"` : ''} target="_blank" rel="noreferrer">${label}</a>`;
         }
         return `<a href="${rawUrl(resolved)}" ${title ? `title="${title}"` : ''} target="_blank" rel="noreferrer">${label}</a>`;
       };
       renderer.image = ({ href, text, title }) => {
-        const resolved = normalizePath(base, href || '');
-        return `<img src="${rawUrl(resolved)}" alt="${text || ''}" ${title ? `title="${title}"` : ''}>`;
+        const resolved = resolveAssetPath(base, href || '');
+        const src = /^(https?:|data:)/i.test(resolved) ? resolved : rawUrl(resolved);
+        return `<img src="${src}" alt="${text || ''}" ${title ? `title="${title}"` : ''} loading="lazy">`;
       };
 
       marked.setOptions({ renderer, gfm: true, breaks: false });
       markdownRoot.innerHTML = marked.parse(text);
+
+      markdownRoot.querySelectorAll('img').forEach(img => {
+        const original = img.getAttribute('src') || '';
+        const resolved = resolveAssetPath(base, original);
+        img.src = /^(https?:|data:)/i.test(resolved) ? resolved : rawUrl(resolved);
+        img.loading = 'lazy';
+      });
 
       document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
         const parent = block.parentElement;
