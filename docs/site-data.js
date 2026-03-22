@@ -63,6 +63,7 @@ window.SITE_DATA = {
         { title: 'Arkkitehtuuri', path: 'kaaviot/arkkitehtuuri.md' },
         { title: 'Järjestelmäkaavio', path: 'kaaviot/jarjestelmakaavio.md' },
         { title: 'Mittapistekartta', path: 'kaaviot/mittapistekartta.md' },
+        { title: 'Kasitekartta', path: 'kaaviot/kasitekartta.md' },
         { title: 'Oliopohjainen malli', path: 'kaaviot/oliopohjainen-malli.md' },
         { title: 'Opaskartta', path: 'tyomuistiot/opaskartta.md' },
         { title: 'Operatiivinen opas luonnos', path: 'tyomuistiot/operatiivinen-opas-luonnos.md' },
