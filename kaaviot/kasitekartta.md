@@ -90,7 +90,7 @@ flowchart TB
 
     I --> I1["Hiilijalanjalki"]
     I --> I2["Vedenkulutus"]
-    I --> I3["Hukkalammön hyodyntaminen tai hukkaaminen"]
+    I --> I3["Hukkalammon hyodyntaminen tai hukkaaminen"]
     I --> I4["Rakentamisen materiaalikuorma"]
     I --> I5["E-jate ja kierratys"]
 
