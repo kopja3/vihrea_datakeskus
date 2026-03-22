@@ -1,4 +1,4 @@
 window.ANALYTICS_CONFIG = {
-  goatcounterCode: 'vihrea_datakeskus',
+  goatcounterCode: 'kopja3/vihrea_datakeskus',
   allowLocal: false
 };
