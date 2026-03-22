@@ -1,3 +1,16 @@
+(function () {
+  function appendScript(src) {
+    if (document.querySelector('script[src="' + src + '"]')) return;
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    document.head.appendChild(script);
+  }
+
+  appendScript('./analytics-config.js');
+  appendScript('./analytics-loader.js');
+})();
+
 window.SITE_DATA = {
   repoOwner: 'kopja3',
   repoName: 'vihrea_datakeskus',
