@@ -141,6 +141,17 @@
       text-align: left;
       vertical-align: top;
     }
+    #markdown .mermaid {
+      overflow-x: auto;
+      padding: 0.5rem 0;
+    }
+    #markdown .mermaid svg {
+      display: block;
+      height: auto;
+      max-width: none;
+      min-width: 1100px;
+      margin: 0 auto;
+    }
     .helper {
       padding: 0.9rem 1rem;
       border-radius: 12px;
@@ -158,6 +169,9 @@
       }
       .content {
         min-height: auto;
+      }
+      #markdown .mermaid svg {
+        min-width: 900px;
       }
     }
   </style>
@@ -272,8 +286,8 @@
           <h2>${section.title}</h2>
           <div class="nav-list">
             ${section.items.map(item => `
-              <a class="nav-link ${item.path === current.path ? 'active' : ''}" href="${docHref(item.path)}">${item.title}</a>
-            `).join('')}
+              <a class="nav-link ${item.path === current.path ? 'active' : ''}" href="${docHref(item.path)}">${item.title}</a>`
+            ).join('')}
           </div>
         </section>
       `).join('');
@@ -318,7 +332,7 @@
         img.loading = 'lazy';
       });
 
-      document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+      document.querySelectorAll('pre code.language-mermaid').forEach((block) => {
         const parent = block.parentElement;
         const div = document.createElement('div');
         div.className = 'mermaid';
@@ -327,7 +341,11 @@
       });
 
       if (window.mermaid) {
-        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose' });
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'loose',
+          flowchart: { useMaxWidth: false }
+        });
         await mermaid.run({ querySelector: '.mermaid' });
       }
     }
