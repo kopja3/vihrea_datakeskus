@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vihreä datakeskus - sisältösivu</title>
+  <meta name="description" content="Monisivuinen lukunäkymä vihreä datakeskus -aineistolle.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --text: #101828;
+      --muted: #475467;
+      --line: #e4e7ec;
+      --card: #ffffff;
+      --brand: #0f5c38;
+      --brand-soft: #e8f5ee;
+      --shadow: 0 12px 30px rgba(16,24,40,0.08);
+      --radius: 18px;
+      --container: 1200px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    a { color: var(--brand); }
+    .shell {
+      width: min(var(--container), calc(100% - 2rem));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 1.2rem;
+      padding: 1.2rem 0 2rem;
+    }
+    .panel, .content {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .panel {
+      padding: 1rem;
+      position: sticky;
+      top: 1rem;
+      height: calc(100vh - 2rem);
+      overflow: auto;
+    }
+    .brand {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 0.86rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      text-decoration: none;
+    }
+    .panel h1 {
+      font-size: 1.25rem;
+      margin: 0 0 0.5rem;
+    }
+    .panel p {
+      color: var(--muted);
+      margin: 0 0 1rem;
+      font-size: 0.95rem;
+    }
+    .section + .section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .section h2 {
+      font-size: 0.98rem;
+      margin: 0 0 0.6rem;
+    }
+    .nav-list {
+      display: grid;
+      gap: 0.4rem;
+    }
+    .nav-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.94rem;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: var(--brand-soft);
+      border-color: #cde7d7;
+      color: var(--brand);
+    }
+    .content {
+      padding: 1.4rem 1.4rem 2rem;
+      min-height: calc(100vh - 2rem);
+    }
+    .content-header {
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+    }
+    .content-header h1 {
+      margin: 0 0 0.4rem;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.1;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    #markdown img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+    #markdown pre {
+      overflow: auto;
+      padding: 1rem;
+      background: #0b1020;
+      color: #f8fafc;
+      border-radius: 14px;
+    }
+    #markdown code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    #markdown table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    #markdown th, #markdown td {
+      border: 1px solid var(--line);
+      padding: 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    #markdown .mermaid {
+      overflow-x: auto;
+      padding: 0.5rem 0;
+    }
+    #markdown .mermaid svg {
+      display: block;
+      height: auto;
+      max-width: none;
+      min-width: 1100px;
+      margin: 0 auto;
+    }
+    .helper {
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      background: #f2f4f7;
+      color: var(--muted);
+      margin: 1rem 0;
+    }
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+      .panel {
+        position: static;
+        height: auto;
+      }
+      .content {
+        min-height: auto;
+      }
+      #markdown .mermaid svg {
+        min-width: 900px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="panel">
+      <a class="brand" href="./index.html">Vihreä datakeskus</a>
+      <h1>Aineiston lukunäkymä</h1>
+      <p>Valitse vasemmalta opas tai avaa sisältö suoraan etusivun linkeistä.</p>
+      <div id="nav"></div>
+    </aside>
+    <main class="content">
+      <div class="content-header">
+        <h1 id="page-title">Ladataan sisältöä</h1>
+        <div class="meta" id="page-meta"></div>
+      </div>
+      <div id="helper" class="helper">Tämä näkymä hakee alkuperäisen Markdown-tiedoston reposta ja renderöi sen verkkosivuksi.</div>
+      <article id="markdown"></article>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="site-data.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('doc');
+    const allItems = window.SITE_DATA.sections.flatMap(section =>
+      section.items.map(item => ({ ...item, section: section.title, sectionSlug: section.slug }))
+    );
+    const current = allItems.find(item => item.path === requested) || allItems[0];
+    const nav = document.getElementById('nav');
+    const pageTitle = document.getElementById('page-title');
+    const pageMeta = document.getElementById('page-meta');
+    const markdownRoot = document.getElementById('markdown');
+
+    function rawUrl(path) {
+      return `https://raw.githubusercontent.com/${window.SITE_DATA.repoOwner}/${window.SITE_DATA.repoName}/main/${path}`;
+    }
+
+    function baseDir(path) {
+      const index = path.lastIndexOf('/');
+      return index === -1 ? '' : path.slice(0, index + 1);
+    }
+
+    function normalizePath(base, relative) {
+      if (/^(https?:|mailto:|#|data:)/i.test(relative)) return relative;
+      const stack = (base + relative).split('/');
+      const out = [];
+      for (const part of stack) {
+        if (!part || part === '.') continue;
+        if (part === '..') out.pop();
+        else out.push(part);
+      }
+      return out.join('/');
+    }
+
+    const legacyAssetMap = new Map([
+      ['kuvat/Kansallinen%20konsali.jpg', 'kuvat/kansallinen-konsali.jpg'],
+      ['kuvat/Kansallinen konsali.jpg', 'kuvat/kansallinen-konsali.jpg'],
+      ['kuvat/LUMIwhitespacetekninenkerros.jpg', 'kuvat/lumi-whitespace-tekninen-kerros.jpg'],
+      ['kuvat/Vaihe1.png', 'kuvat/m3-vaihe1.png'],
+      ['kuvat/Vaihe2.png', 'kuvat/m3-vaihe2.png'],
+      ['kuvat/Vaihe3.png', 'kuvat/m3-vaihe3.png'],
+      ['kuvat/Vaihe4.png', 'kuvat/m3-vaihe4.png'],
+      ['kuvat/vaihe5_2.png', 'kuvat/m4-vaihe5.png'],
+      ['kuvat/Vaihe6.png', 'kuvat/m3-vaihe6.png'],
+      ['kuvat/datakeskus_vaihe1_sahkonsyotto_jaahdytys.png', 'kuvat/m4-sahkonsyotto-jaahdytys.png'],
+      ['kuvat/datakeskus_vaihe2_verkkopalvelupyynnot2.png', 'kuvat/m4-verkkopalvelupyynnot.png'],
+      ['kuvat/Datakeskuksen_operointi_ja_käytto2.png', 'kuvat/m4-operointi-ja-kaytto.png'],
+      ['kuvat/Datakeskuksen_operointi_ja_kaytto2.png', 'kuvat/m4-operointi-ja-kaytto.png'],
+      ['kuvat/datakeskuksen_energiankulutus.png', 'kuvat/m5-energiankulutus.png'],
+      ['kuvat/datakeskus_ei_hukkalammon_hyod.png', 'kuvat/m5-ei-hukkalammon-hyod.png'],
+      ['kuvat/datakeskus_hyod_hukkalampöa.png', 'kuvat/m5-hukkalammon-hyodyntaminen.png'],
+      ['kuvat/datakeskus_hyod_hukkalampoa.png', 'kuvat/m5-hukkalammon-hyodyntaminen.png'],
+      ['img/p1-kuva1-datakeskus-infra.png', 'kuvat/p1-kuva1-datakeskus-infra.png'],
+      ['img/p1-kuva2-palvelupyynto.png', 'kuvat/p1-kuva2-palvelupyynto.png'],
+      ['img/p3-kuva3-datakeskuksen-mittaus-jarjestelma.png', 'kuvat/p3-kuva3-datakeskuksen-mittaus-jarjestelma.png']
+    ]);
+
+    function canonicalizeAssetPath(path) {
+      return (path || '')
+        .replace(/\\/g, '/')
+        .trim()
+        .replace(/^(\.\/)+/, '')
+        .replace(/^(\.\.\/)+/, '');
+    }
+
+    function resolveAssetPath(base, relative) {
+      if (!relative || /^(https?:|mailto:|#|data:)/i.test(relative)) return relative || '';
+      const normalized = normalizePath(base, relative);
+      const candidates = [
+        canonicalizeAssetPath(normalized),
+        canonicalizeAssetPath(decodeURIComponent(normalized)),
+        canonicalizeAssetPath(relative),
+        canonicalizeAssetPath(decodeURIComponent(relative))
+      ];
+      for (const candidate of candidates) {
+        if (legacyAssetMap.has(candidate)) return legacyAssetMap.get(candidate);
+      }
+      return normalized;
+    }
+
+    function docHref(path) {
+      return `./site-view-wide.html?doc=${encodeURIComponent(path)}`;
+    }
+
+    function renderNav() {
+      nav.innerHTML = window.SITE_DATA.sections.map(section => `
+        <section class="section">
+          <h2>${section.title}</h2>
+          <div class="nav-list">
+            ${section.items.map(item => `
+              <a class="nav-link ${item.path === current.path ? 'active' : ''}" href="${docHref(item.path)}">${item.title}</a>
+            `).join('')}
+          </div>
+        </section>
+      `).join('');
+    }
+
+    async function render() {
+      renderNav();
+      pageTitle.textContent = current.title;
+      pageMeta.textContent = `${current.section} · ${current.path}`;
+
+      const source = await fetch(rawUrl(current.path));
+      const text = await source.text();
+      const base = baseDir(current.path);
+
+      const renderer = new marked.Renderer();
+      renderer.link = ({ href, title, tokens }) => {
+        const label = tokens?.map(t => t.text || '').join('') || href || '';
+        if (!href) return label;
+        if (href.endsWith('.md')) {
+          const resolved = normalizePath(base, href);
+          return `<a href="${docHref(resolved)}">${label}</a>`;
+        }
+        const resolved = resolveAssetPath(base, href);
+        if (/^(https?:|mailto:|#|data:)/i.test(resolved)) {
+          return `<a href="${resolved}" ${title ? `title="${title}"` : ''} target="_blank" rel="noreferrer">${label}</a>`;
+        }
+        return `<a href="${rawUrl(resolved)}" ${title ? `title="${title}"` : ''} target="_blank" rel="noreferrer">${label}</a>`;
+      };
+      renderer.image = ({ href, text, title }) => {
+        const resolved = resolveAssetPath(base, href || '');
+        const src = /^(https?:|data:)/i.test(resolved) ? resolved : rawUrl(resolved);
+        return `<img src="${src}" alt="${text || ''}" ${title ? `title="${title}"` : ''} loading="lazy">`;
+      };
+
+      marked.setOptions({ renderer, gfm: true, breaks: false });
+      markdownRoot.innerHTML = marked.parse(text);
+
+      markdownRoot.querySelectorAll('img').forEach(img => {
+        const original = img.getAttribute('src') || '';
+        const resolved = resolveAssetPath(base, original);
+        img.src = /^(https?:|data:)/i.test(resolved) ? resolved : rawUrl(resolved);
+        img.loading = 'lazy';
+      });
+
+      document.querySelectorAll('pre code.language-mermaid').forEach((block) => {
+        const parent = block.parentElement;
+        const div = document.createElement('div');
+        div.className = 'mermaid';
+        div.textContent = block.textContent;
+        parent.replaceWith(div);
+      });
+
+      if (window.mermaid) {
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'loose',
+          flowchart: { useMaxWidth: false }
+        });
+        await mermaid.run({ querySelector: '.mermaid' });
+      }
+    }
+
+    render().catch(err => {
+      pageTitle.textContent = 'Sisältöä ei voitu ladata';
+      pageMeta.textContent = current ? current.path : '';
+      markdownRoot.innerHTML = `<div class="helper">Virhe: ${err.message}</div>`;
+    });
+  </script>
+</body>
+</html>
