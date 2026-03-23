@@ -1,4 +1,4 @@
 window.ANALYTICS_CONFIG = {
-  goatcounterCode: 'vihrea-datakeskus',
-  allowLocal: false
+  <script data-goatcounter="https://vihrea-datakeskus.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
 };
