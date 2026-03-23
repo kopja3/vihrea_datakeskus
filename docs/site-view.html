@@ -8,6 +8,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    window.goatcounter = window.goatcounter || {};
+    window.goatcounter.path = function () {
+      const params = new URLSearchParams(window.location.search);
+      const doc = params.get('doc');
+      if (doc) {
+        return '/site-view/' + doc;
+      }
+      return window.location.pathname + window.location.search;
+    };
+  </script>
+  <script data-goatcounter="https://vihrea-datakeskus.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   <style>
     :root {
       --bg: #f8fafc;

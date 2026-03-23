@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script data-goatcounter="https://vihrea-datakeskus.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   <style>
     :root {
       --bg: #f8fafc;
@@ -254,12 +255,6 @@
       return `./site-view.html?doc=${encodeURIComponent(path)}`;
     }
 
-    function getGoatCounterSiteCode() {
-      if (window.GOATCOUNTER_SITE_CODE) return window.GOATCOUNTER_SITE_CODE;
-      const rawCode = String((window.ANALYTICS_CONFIG && window.ANALYTICS_CONFIG.goatcounterCode) || '').trim();
-      return rawCode.split('/').filter(Boolean).pop() || rawCode;
-    }
-
     function getGoatCounterPath() {
       return window.location.pathname + window.location.search;
     }
@@ -280,14 +275,8 @@
     }
 
     async function loadVisits() {
-      const siteCode = getGoatCounterSiteCode();
-      if (!siteCode) {
-        setVisits('—', 'GoatCounter-koodi puuttuu');
-        return;
-      }
-
       const path = getGoatCounterPath();
-      const url = 'https://' + siteCode + '.goatcounter.com/counter/' + encodeURIComponent(path) + '.json';
+      const url = 'https://vihrea-datakeskus.goatcounter.com/counter/' + encodeURIComponent(path) + '.json';
 
       try {
         const response = await fetch(url, { cache: 'no-store' });
