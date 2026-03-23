@@ -100,7 +100,7 @@
       font-size: 1.5rem;
       margin-bottom: 0.15rem;
     }
-    .stat.pageviews {
+    .stat.counter {
       background: var(--brand-soft-strong);
     }
     .stat small {
@@ -254,50 +254,57 @@
       return `./site-view.html?doc=${encodeURIComponent(path)}`;
     }
 
+    function getGoatCounterSiteCode() {
+      if (window.GOATCOUNTER_SITE_CODE) return window.GOATCOUNTER_SITE_CODE;
+      const rawCode = String((window.ANALYTICS_CONFIG && window.ANALYTICS_CONFIG.goatcounterCode) || '').trim();
+      return rawCode.split('/').filter(Boolean).pop() || rawCode;
+    }
+
+    function getGoatCounterPath() {
+      return window.location.pathname + window.location.search;
+    }
+
     statsRoot.innerHTML = `
       <div class="stat"><strong>${totalSections}</strong><span>sisältöosiota</span></div>
       <div class="stat"><strong>${totalDocs}</strong><span>dokumenttia</span></div>
       <div class="stat"><strong>1</strong><span>yhtenäinen lukunäkymä</span></div>
-      <div class="stat pageviews" id="pageviews-card"><strong id="pageviews-value">…</strong><span>Sivun näyttökerrat</span><small id="pageviews-note">Ladataan kävijälaskuria</small></div>
+      <div class="stat counter"><strong id="visits-value">…</strong><span>Sivun käynnit</span><small id="visits-note">Ladataan käyntimäärää</small></div>
     `;
 
-    const pageviewsValue = document.getElementById('pageviews-value');
-    const pageviewsNote = document.getElementById('pageviews-note');
+    const visitsValue = document.getElementById('visits-value');
+    const visitsNote = document.getElementById('visits-note');
 
-    function setPageviews(value, note) {
-      pageviewsValue.textContent = value;
-      pageviewsNote.textContent = note;
+    function setVisits(value, note) {
+      visitsValue.textContent = value;
+      visitsNote.textContent = note;
     }
 
-    async function loadPageviews(attempt = 0) {
-      const siteCode = window.GOATCOUNTER_SITE_CODE;
-      const hasGoatCounterData = window.goatcounter && typeof window.goatcounter.get_data === 'function';
+    async function loadVisits() {
+      const siteCode = getGoatCounterSiteCode();
+      if (!siteCode) {
+        setVisits('—', 'GoatCounter-koodi puuttuu');
+        return;
+      }
 
-      if (siteCode && hasGoatCounterData) {
-        try {
-          const path = window.goatcounter.get_data()['p'];
-          const url = 'https://' + siteCode + '.goatcounter.com/counter/' + encodeURIComponent(path) + '.json';
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-          }
-          const payload = await response.json();
-          setPageviews(payload.count || '0', 'GoatCounterin raportoimat näyttökerrat tälle sivulle');
-        } catch (error) {
-          setPageviews('—', 'Näyttökertoja ei saatu haettua');
+      const path = getGoatCounterPath();
+      const url = 'https://' + siteCode + '.goatcounter.com/counter/' + encodeURIComponent(path) + '.json';
+
+      try {
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
         }
-        return;
+        const payload = await response.json();
+        if (!payload || typeof payload.count === 'undefined') {
+          throw new Error('Missing count');
+        }
+        setVisits(payload.count || '0', 'GoatCounterin raportoimat käynnit tälle sivulle');
+      } catch (error) {
+        setVisits('—', 'Salli GoatCounterin visitor counter tai tarkista estoasetukset');
       }
-
-      if (attempt >= 50) {
-        setPageviews('—', 'Kävijälaskuri ei ole käytettävissä');
-        return;
-      }
-
-      window.setTimeout(() => loadPageviews(attempt + 1), 200);
     }
 
-    loadPageviews();
+    loadVisits();
 
     sectionsRoot.innerHTML = data.sections.map(section => {
       const first = section.items[0];
