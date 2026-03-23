@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vihreä datakeskus – mittarilaskuri</title>
+  <meta name="description" content="Laske datakeskuksen PUE, REF, ERF, CER, CUE ja WUE yhdestä näkymästä.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-soft: #f2f4f7;
+      --text: #101828;
+      --muted: #475467;
+      --line: #d0d5dd;
+      --brand: #0f5c38;
+      --brand-2: #157347;
+      --brand-soft: #e8f5ee;
+      --warning: #b54708;
+      --warning-soft: #fff4ed;
+      --danger: #b42318;
+      --shadow: 0 12px 30px rgba(16,24,40,0.08);
+      --radius: 18px;
+      --container: 1180px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .container {
+      width: min(var(--container), calc(100% - 2rem));
+      margin: 0 auto;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0b1020 0%, #163a2a 100%);
+      color: #fff;
+      padding: 4.5rem 0 3rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 0.75rem; }
+    h1 { font-size: clamp(2.2rem, 4vw, 3.6rem); max-width: 860px; }
+    h2 { font-size: clamp(1.4rem, 2.6vw, 2.1rem); }
+    .lead {
+      max-width: 860px;
+      font-size: 1.06rem;
+      color: rgba(255,255,255,0.88);
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-top: 1.5rem;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.9rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      font: inherit;
+      font-weight: 700;
+      transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button.primary {
+      background: #fff;
+      color: var(--brand);
+    }
+    .button.secondary {
+      border-color: rgba(255,255,255,0.22);
+      color: #fff;
+    }
+    .button.ghost {
+      background: var(--surface-soft);
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .hero-stat {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 1rem;
+    }
+    .hero-stat strong {
+      display: block;
+      font-size: 1.45rem;
+      margin-bottom: 0.15rem;
+    }
+    .section {
+      padding: 2.3rem 0;
+    }
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+    }
+    .panel p, .muted { color: var(--muted); }
+    .input-grid, .result-grid, .formula-grid, .guide-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .field label {
+      font-weight: 700;
+      font-size: 0.96rem;
+    }
+    .field small {
+      color: var(--muted);
+      min-height: 2.5em;
+    }
+    .field input {
+      width: 100%;
+      padding: 0.85rem 0.95rem;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+    .field input:focus {
+      outline: 2px solid rgba(15,92,56,0.18);
+      border-color: var(--brand-2);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .result-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.15rem;
+      border: 1px solid transparent;
+    }
+    .result-card.highlight {
+      border-color: #cfe7d8;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fcfa 100%);
+    }
+    .metric-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .value {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin: 0.2rem 0 0.55rem;
+    }
+    .value.empty {
+      color: #98a2b3;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    .status {
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+    .status.warn { color: var(--warning); }
+    .status.bad { color: var(--danger); }
+    .formula-card {
+      background: var(--surface-soft);
+      border-radius: 16px;
+      padding: 1rem;
+      border: 1px solid var(--line);
+    }
+    code.formula {
+      display: inline-block;
+      padding: 0.2rem 0.45rem;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.95rem;
+    }
+    .notice {
+      background: var(--warning-soft);
+      border: 1px solid #fecdca;
+      color: #7a2e0e;
+      padding: 0.95rem 1rem;
+      border-radius: 14px;
+      margin-top: 1rem;
+    }
+    .footer {
+      padding: 2rem 0 3rem;
+    }
+    .summary-box {
+      background: #0f172a;
+      color: #fff;
+      border-radius: 16px;
+      padding: 1rem;
+      white-space: pre-wrap;
+      font-size: 0.96rem;
+      line-height: 1.55;
+      min-height: 12rem;
+    }
+    ul.compact {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+    }
+    ul.compact li + li { margin-top: 0.35rem; }
+    @media (max-width: 760px) {
+      .hero { padding: 4rem 0 2.7rem; }
+      .section-header { display: block; }
+      .value { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="eyebrow">Mittarilaskuri</div>
+      <h1>Laske PUE, REF, ERF, CER, CUE ja WUE yhdestä näkymästä</h1>
+      <p class="lead">Tämä laskuri käyttää samassa repossa julkaistuja mittarikorttien kaavoja. Syötä datakeskuksen energia-, päästö-, lämpö- ja vesitiedot, niin saat keskeiset tunnusluvut heti näkyviin ilman erillistä taulukkoa.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#laskenta">Siirry laskentaan</a>
+        <a class="button secondary" href="./index.html">Takaisin etusivulle</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>6</strong><span>mittaria samassa laskurissa</span></div>
+        <div class="hero-stat"><strong>1</strong><span>yhteinen syöttölomake</span></div>
+        <div class="hero-stat"><strong>0</strong><span>pakollista build-vaihetta</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="laskenta" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>Syötä lähtöarvot</h2>
+            <p class="muted">Jätä kenttä tyhjäksi, jos mittaria ei voi vielä laskea. Tuloskortit näyttävät automaattisesti, mitä tietoa puuttuu.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="input-grid">
+            <div class="field">
+              <label for="totalEnergy">Kokonaisenergiankulutus (kWh)</label>
+              <input id="totalEnergy" name="totalEnergy" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 1200">
+              <small>Kaikki datakeskuksen kuluttama energia: IT, jäähdytys, UPS-häviöt, valaistus ja muu infrastruktuuri.</small>
+            </div>
+            <div class="field">
+              <label for="itEnergy">IT-/ICT-laitteiden energiankulutus (kWh)</label>
+              <input id="itEnergy" name="itEnergy" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 1000">
+              <small>Palvelimet, tallennus ja verkkolaitteet. Tätä arvoa käytetään PUE- ja CUE-laskennassa.</small>
+            </div>
+            <div class="field">
+              <label for="renewableEnergy">Uusiutuva energia (kWh)</label>
+              <input id="renewableEnergy" name="renewableEnergy" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 800">
+              <small>Datakeskuksen tuottama ja hallinnoima uusiutuva energia REF-laskentaa varten.</small>
+            </div>
+            <div class="field">
+              <label for="reusedHeat">Uudelleenkäytetty hukkalämpö (kWh)</label>
+              <input id="reusedHeat" name="reusedHeat" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 300">
+              <small>Talteen otettu ja hyödynnetty hukkalämpö ERF-laskentaa varten.</small>
+            </div>
+            <div class="field">
+              <label for="removedHeat">Poistettu lämpö (kWh)</label>
+              <input id="removedHeat" name="removedHeat" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 950">
+              <small>Jäähdytysjärjestelmän poistama lämpöenergia CER-laskentaa varten.</small>
+            </div>
+            <div class="field">
+              <label for="coolingEnergy">Jäähdytysjärjestelmän energiankulutus (kWh)</label>
+              <input id="coolingEnergy" name="coolingEnergy" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 440">
+              <small>Jäähdytysratkaisun käyttämä energia CER-laskentaa varten.</small>
+            </div>
+            <div class="field">
+              <label for="emissions">CO₂e-päästöt (kgCO₂e)</label>
+              <input id="emissions" name="emissions" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 1500">
+              <small>Energiankäytön päästöt, esimerkiksi scope 1 ja 2, CUE-laskentaa varten.</small>
+            </div>
+            <div class="field">
+              <label for="waterUse">Vedenkulutus (m³)</label>
+              <input id="waterUse" name="waterUse" type="number" min="0" step="any" inputmode="decimal" placeholder="esim. 928">
+              <small>Kokonaisvedenkäyttö WUE-laskentaa varten.</small>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="button ghost" type="button" id="fillExample">Täytä esimerkkiluvut</button>
+            <button class="button ghost" type="button" id="clearAll">Tyhjennä kentät</button>
+            <button class="button ghost" type="button" id="copySummary">Kopioi yhteenveto</button>
+          </div>
+          <div class="notice" id="notice">WUE lasketaan standardikortin mukaan muodossa m³/MWh. Laskuri muuntaa IT-energian automaattisesti kWh:sta MWh:ksi tätä mittaria varten.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>Tulokset</h2>
+            <p class="muted">Kortit päivittyvät heti, kun arvoja syötetään. Laskuri näyttää myös kaavan ja lyhyen tulkinnan.</p>
+          </div>
+        </div>
+        <div class="result-grid" id="results"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>Kaavat ja yksiköt</h2>
+            <p class="muted">Tämä sivu ei korvaa mittausrajausten määrittelyä. Se helpottaa jo kerättyjen lukujen laskentaa ja vertailua.</p>
+          </div>
+        </div>
+        <div class="formula-grid">
+          <article class="formula-card">
+            <h3>PUE</h3>
+            <p><code class="formula">kokonaisenergia / IT-energia</code></p>
+            <p class="muted">Pienempi on parempi, mutta käytännössä arvo on aina yli 1,0.</p>
+          </article>
+          <article class="formula-card">
+            <h3>REF</h3>
+            <p><code class="formula">uusiutuva energia / kokonaisenergia</code></p>
+            <p class="muted">Arvo 0–1. Suurempi osuus tarkoittaa enemmän uusiutuvaa energiaa.</p>
+          </article>
+          <article class="formula-card">
+            <h3>ERF</h3>
+            <p><code class="formula">uudelleenkäytetty hukkalämpö / kokonaisenergia</code></p>
+            <p class="muted">Arvo 0–1. Suurempi osuus tarkoittaa parempaa energian uudelleenkäyttöä.</p>
+          </article>
+          <article class="formula-card">
+            <h3>CER</h3>
+            <p><code class="formula">poistettu lämpö / jäähdytysenergia</code></p>
+            <p class="muted">Suurempi arvo tarkoittaa energiatehokkaampaa jäähdytystä.</p>
+          </article>
+          <article class="formula-card">
+            <h3>CUE</h3>
+            <p><code class="formula">CO₂e-päästöt / IT-energia</code></p>
+            <p class="muted">Yksikkö kgCO₂e/kWh. Pienempi arvo tarkoittaa pienempiä päästöjä suhteessa IT-kuormaan.</p>
+          </article>
+          <article class="formula-card">
+            <h3>WUE</h3>
+            <p><code class="formula">vedenkulutus / IT-energia(MWh)</code></p>
+            <p class="muted">Yksikkö m³/MWh. Laskuri näyttää lisäksi myös litraa per kWh helpompaa tulkintaa varten.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container guide-grid">
+        <article class="panel">
+          <h2>Yhteenveto</h2>
+          <div class="summary-box" id="summaryBox">Syötä luvut, niin tähän muodostuu kopioitava yhteenveto.</div>
+        </article>
+        <article class="panel">
+          <h2>Huomioitavaa tulkinnassa</h2>
+          <ul class="compact">
+            <li>PUE kertoo infrastruktuurin tehokkuudesta, mutta ei sähkön alkuperästä.</li>
+            <li>CUE täydentää PUE:ta, koska sama energiankäyttö voi aiheuttaa hyvin erilaiset päästöt.</li>
+            <li>REF ja ERF kuvaavat uusiutuvan energian osuutta ja hukkalämmön hyötykäyttöä.</li>
+            <li>WUE on erityisen tärkeä siellä, missä veden saatavuus tai jäähdytyksen vesijalanjälki on kriittinen.</li>
+            <li>CER kertoo jäähdytyksen tehokkuudesta, mutta ei yksin koko datakeskuksen energiatehokkuudesta.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="muted">Laskuri on toteutettu staattisena HTML-sivuna, joten se toimii suoraan GitHub Pagesissä ilman erillistä build-prosessia.</p>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const fields = {
+      totalEnergy: $("totalEnergy"),
+      itEnergy: $("itEnergy"),
+      renewableEnergy: $("renewableEnergy"),
+      reusedHeat: $("reusedHeat"),
+      removedHeat: $("removedHeat"),
+      coolingEnergy: $("coolingEnergy"),
+      emissions: $("emissions"),
+      waterUse: $("waterUse")
+    };
+
+    const resultsRoot = $("results");
+    const summaryBox = $("summaryBox");
+    const fillExampleButton = $("fillExample");
+    const clearAllButton = $("clearAll");
+    const copySummaryButton = $("copySummary");
+
+    const metrics = [
+      {
+        key: "pue",
+        title: "PUE",
+        badge: "EN 50600-4-2",
+        formula: "Kokonaisenergia / IT-energia",
+        compute: (v) => divide(v.totalEnergy, v.itEnergy),
+        display: (value) => formatNumber(value),
+        detail: (value) => {
+          if (value === null) return "Anna kokonaisenergia ja IT-energia.";
+          if (value < 1) return "Tarkista syötteet: PUE ei voi käytännössä olla alle 1,0.";
+          if (value <= 1.2) return "Erittäin tehokas taso.";
+          if (value <= 1.5) return "Hyvä taso nykyaikaiselle datakeskukselle.";
+          if (value <= 2.0) return "Kohtalainen taso. Optimointipotentiaalia on.";
+          return "Korkea arvo. Tukijärjestelmien kulutusta kannattaa tarkastella.";
+        },
+        status: (value) => {
+          if (value === null) return "Puuttuu syötteitä";
+          if (value < 1) return "Tarkista syötteet";
+          if (value <= 1.5) return "Hyvä";
+          if (value <= 2.0) return "Keskitaso";
+          return "Heikko";
+        },
+        tone: (value) => {
+          if (value === null) return "";
+          if (value < 1) return "bad";
+          if (value <= 1.5) return "";
+          if (value <= 2.0) return "warn";
+          return "bad";
+        }
+      },
+      {
+        key: "ref",
+        title: "REF",
+        badge: "EN 50600-4-3",
+        formula: "Uusiutuva energia / kokonaisenergia",
+        compute: (v) => divide(v.renewableEnergy, v.totalEnergy),
+        display: (value) => value === null ? null : `${formatNumber(value)} (${formatPercent(value)})`,
+        detail: (value) => value === null ? "Anna uusiutuva energia ja kokonaisenergia." : "Suurempi osuus tarkoittaa enemmän uusiutuvaa energiaa kokonaiskulutuksesta.",
+        status: (value) => value === null ? "Puuttuu syötteitä" : "Suurempi on parempi",
+        tone: () => ""
+      },
+      {
+        key: "erf",
+        title: "ERF",
+        badge: "EN 50600-4-6",
+        formula: "Uudelleenkäytetty hukkalämpö / kokonaisenergia",
+        compute: (v) => divide(v.reusedHeat, v.totalEnergy),
+        display: (value) => value === null ? null : `${formatNumber(value)} (${formatPercent(value)})`,
+        detail: (value) => value === null ? "Anna uudelleenkäytetty hukkalämpö ja kokonaisenergia." : "Suurempi osuus tarkoittaa parempaa hukkalämmön hyötykäyttöä.",
+        status: (value) => value === null ? "Puuttuu syötteitä" : "Suurempi on parempi",
+        tone: () => ""
+      },
+      {
+        key: "cer",
+        title: "CER",
+        badge: "EN 50600-4-7",
+        formula: "Poistettu lämpö / jäähdytysenergia",
+        compute: (v) => divide(v.removedHeat, v.coolingEnergy),
+        display: (value) => formatNumber(value),
+        detail: (value) => value === null ? "Anna poistettu lämpö ja jäähdytysenergia." : "Suurempi arvo tarkoittaa energiatehokkaampaa jäähdytystä.",
+        status: (value) => value === null ? "Puuttuu syötteitä" : "Suurempi on parempi",
+        tone: () => ""
+      },
+      {
+        key: "cue",
+        title: "CUE",
+        badge: "EN 50600-4-8",
+        formula: "CO₂e-päästöt / IT-energia",
+        compute: (v) => divide(v.emissions, v.itEnergy),
+        display: (value) => value === null ? null : `${formatNumber(value)} kgCO₂e/kWh`,
+        detail: (value) => value === null ? "Anna päästöt ja IT-energia." : "Pienempi arvo tarkoittaa pienempiä päästöjä suhteessa IT-kuormaan.",
+        status: (value) => value === null ? "Puuttuu syötteitä" : "Pienempi on parempi",
+        tone: () => ""
+      },
+      {
+        key: "wue",
+        title: "WUE",
+        badge: "EN 50600-4-9",
+        formula: "Vedenkulutus / IT-energia(MWh)",
+        compute: (v) => {
+          const itMWh = toMWh(v.itEnergy);
+          return divide(v.waterUse, itMWh);
+        },
+        display: (value) => {
+          if (value === null) return null;
+          const litersPerKWh = value;
+          return `${formatNumber(value)} m³/MWh · ${formatNumber(litersPerKWh)} l/kWh`;
+        },
+        detail: (value) => value === null ? "Anna vedenkulutus ja IT-energia." : "Pienempi arvo tarkoittaa tehokkaampaa vedenkäyttöä.",
+        status: (value) => value === null ? "Puuttuu syötteitä" : "Pienempi on parempi",
+        tone: () => ""
+      }
+    ];
+
+    function readValues() {
+      const values = {};
+      for (const [key, input] of Object.entries(fields)) {
+        const raw = input.value.trim();
+        values[key] = raw === "" ? null : Number(raw);
+      }
+      return values;
+    }
+
+    function divide(a, b) {
+      if (a === null || b === null) return null;
+      if (!Number.isFinite(a) || !Number.isFinite(b) || b <= 0 || a < 0) return NaN;
+      return a / b;
+    }
+
+    function toMWh(kWh) {
+      if (kWh === null) return null;
+      if (!Number.isFinite(kWh) || kWh < 0) return NaN;
+      return kWh / 1000;
+    }
+
+    function formatNumber(value) {
+      if (value === null) return null;
+      if (!Number.isFinite(value)) return "Virhe";
+      return new Intl.NumberFormat('fi-FI', { maximumFractionDigits: 3 }).format(value);
+    }
+
+    function formatPercent(value) {
+      return new Intl.NumberFormat('fi-FI', { style: 'percent', maximumFractionDigits: 1 }).format(value);
+    }
+
+    function metricCard(metric, value) {
+      const displayValue = metric.display(value);
+      const detail = Number.isNaN(value)
+        ? "Tarkista syötteet: jakaja ei voi olla nolla tai negatiivinen, eikä arvo voi olla negatiivinen."
+        : metric.detail(value);
+      const statusText = Number.isNaN(value) ? "Virheellinen syöte" : metric.status(value);
+      const tone = Number.isNaN(value) ? "bad" : metric.tone(value);
+      const shownValue = displayValue || "Ei laskettavissa";
+      return `
+        <article class="result-card ${metric.key === 'pue' ? 'highlight' : ''}">
+          <div class="metric-head">
+            <div>
+              <h3>${metric.title}</h3>
+              <div class="muted">${metric.formula}</div>
+            </div>
+            <span class="badge">${metric.badge}</span>
+          </div>
+          <div class="value ${displayValue ? '' : 'empty'}">${shownValue}</div>
+          <div class="status ${tone}">${statusText}</div>
+          <p>${detail}</p>
+        </article>
+      `;
+    }
+
+    function buildSummary(values, computed) {
+      const lines = [
+        "Datakeskuksen mittarilaskurin yhteenveto",
+        "",
+        "Syötetyt lähtöarvot:",
+        `- Kokonaisenergia: ${withUnit(values.totalEnergy, 'kWh')}`,
+        `- IT-/ICT-energia: ${withUnit(values.itEnergy, 'kWh')}`,
+        `- Uusiutuva energia: ${withUnit(values.renewableEnergy, 'kWh')}`,
+        `- Uudelleenkäytetty hukkalämpö: ${withUnit(values.reusedHeat, 'kWh')}`,
+        `- Poistettu lämpö: ${withUnit(values.removedHeat, 'kWh')}`,
+        `- Jäähdytysenergia: ${withUnit(values.coolingEnergy, 'kWh')}`,
+        `- CO₂e-päästöt: ${withUnit(values.emissions, 'kgCO₂e')}`,
+        `- Vedenkulutus: ${withUnit(values.waterUse, 'm³')}`,
+        "",
+        "Lasketut mittarit:",
+        `- PUE: ${metricSummary('pue', computed.pue)}`,
+        `- REF: ${metricSummary('ref', computed.ref)}`,
+        `- ERF: ${metricSummary('erf', computed.erf)}`,
+        `- CER: ${metricSummary('cer', computed.cer)}`,
+        `- CUE: ${metricSummary('cue', computed.cue)}`,
+        `- WUE: ${metricSummary('wue', computed.wue)}`
+      ];
+      return lines.join("\n");
+    }
+
+    function withUnit(value, unit) {
+      if (value === null) return "ei annettu";
+      if (!Number.isFinite(value)) return "virheellinen arvo";
+      return `${formatNumber(value)} ${unit}`;
+    }
+
+    function metricSummary(key, value) {
+      if (value === null) return "ei laskettavissa";
+      if (!Number.isFinite(value)) return "virheellinen syöte";
+      if (key === 'ref' || key === 'erf') return `${formatNumber(value)} (${formatPercent(value)})`;
+      if (key === 'cue') return `${formatNumber(value)} kgCO₂e/kWh`;
+      if (key === 'wue') return `${formatNumber(value)} m³/MWh`;
+      return formatNumber(value);
+    }
+
+    function render() {
+      const values = readValues();
+      const computed = {};
+      metrics.forEach(metric => {
+        computed[metric.key] = metric.compute(values);
+      });
+      resultsRoot.innerHTML = metrics.map(metric => metricCard(metric, computed[metric.key])).join('');
+      summaryBox.textContent = buildSummary(values, computed);
+    }
+
+    Object.values(fields).forEach(input => input.addEventListener('input', render));
+
+    fillExampleButton.addEventListener('click', () => {
+      fields.totalEnergy.value = '1200';
+      fields.itEnergy.value = '1000';
+      fields.renewableEnergy.value = '804';
+      fields.reusedHeat.value = '300';
+      fields.removedHeat.value = '950';
+      fields.coolingEnergy.value = '440';
+      fields.emissions.value = '150';
+      fields.waterUse.value = '928';
+      render();
+      window.location.hash = '#laskenta';
+    });
+
+    clearAllButton.addEventListener('click', () => {
+      Object.values(fields).forEach(input => {
+        input.value = '';
+      });
+      render();
+    });
+
+    copySummaryButton.addEventListener('click', async () => {
+      const text = summaryBox.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        copySummaryButton.textContent = 'Yhteenveto kopioitu';
+        setTimeout(() => {
+          copySummaryButton.textContent = 'Kopioi yhteenveto';
+        }, 1800);
+      } catch (error) {
+        copySummaryButton.textContent = 'Kopiointi ei onnistunut';
+        setTimeout(() => {
+          copySummaryButton.textContent = 'Kopioi yhteenveto';
+        }, 1800);
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
