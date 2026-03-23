@@ -1,7 +1,6 @@
 (function () {
   const cfg = window.ANALYTICS_CONFIG || {};
-  const rawCode = String(cfg.goatcounterCode || '').trim();
-  const siteCode = rawCode.split('/').filter(Boolean).pop() || rawCode;
+  const siteCode = String(cfg.goatcounterCode || '').trim();
   const allowLocal = Boolean(cfg.allowLocal);
   const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
@@ -24,7 +23,7 @@
 
   const script = document.createElement('script');
   script.async = true;
-  script.src = '//gc.zgo.at/count.js';
-  script.dataset.goatcounter = 'https://' + siteCode + '.goatcounter.com/count';
+  script.src = 'https://gc.zgo.at/count.js';
+  script.dataset.goatcounter = `https://${siteCode}.goatcounter.com/count`;
   document.head.appendChild(script);
 })();
